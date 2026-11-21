@@ -19,7 +19,7 @@ export default {
     if (!target) return Response.json({ error: "Missing shared conversation URL." }, { status: 400, headers: cors() });
     let parsed;
     try { parsed = new URL(target); } catch { return Response.json({ error: "Invalid URL." }, { status: 400, headers: cors() }); }
-    if (!ALLOWED.has(parsed.hostname) || parsed.protocol !== "https:" || !/^\\/share\\/[A-Za-z0-9-]+/.test(parsed.pathname)) return Response.json({ error: "Only public ChatGPT shared links are allowed." }, { status: 400, headers: cors() });
+    if (!ALLOWED.has(parsed.hostname) || parsed.protocol !== "https:" || !(parsed.pathname.startsWith("/share/") && /^[A-Za-z0-9-]+$/.test(parsed.pathname.slice(7)))) return Response.json({ error: "Only public ChatGPT shared links are allowed." }, { status: 400, headers: cors() });
     try {
       const upstream = await fetch(parsed.toString(), { redirect: "follow", headers: { "Accept": "text/html,application/xhtml+xml", "User-Agent": "Mozilla/5.0 (compatible; ChatVault/1.0)" } });
       if (!upstream.ok) return Response.json({ error: "ChatGPT returned HTTP " + upstream.status + ". The link may be unavailable or require access." }, { status: 502, headers: cors() });
