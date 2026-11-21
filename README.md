@@ -1,29 +1,28 @@
 # ChatVault — ChatGPT Shared Conversation Extractor
 
-ChatVault is a one-link ChatGPT shared-conversation extractor.
+ChatVault extracts text from public ChatGPT shared-conversation links.
 
-## User workflow
-1. Paste a public `https://chatgpt.com/share/...` link.
-2. Tap **Extract**.
-3. Copy the full conversation or export it as TXT, Markdown, JSON, HTML, or PDF.
+## Current architecture
+- `index.html`: responsive one-link frontend with Copy All and TXT, Markdown, JSON, HTML, and PDF export.
+- `server.py`: Python/Flask API; fetches the public share page and parses its embedded React Flight conversation payload, with legacy Next.js fallback.
+- `render.yaml`: one-click Render Blueprint for a free Python web service.
+- No database or conversation archive is used.
 
-No user account, ChatGPT sign-in, browser extension, or bookmark setup is required.
+## Deploy on Render (free tier)
+1. Open https://render.com/deploy?repo=https://github.com/projectxwatchathome-max/ChatVault
+2. Sign in to Render and authorize access to the ChatVault GitHub repository.
+3. Review the Blueprint. Confirm the service plan is **Free**.
+4. Tap **Apply** to create and deploy `chatvault-extractor`.
+5. After deployment, open the generated `https://chatvault-extractor.onrender.com` service URL.
 
-## Architecture
-- `index.html` — responsive single-page frontend and browser-side export formatters.
-- `worker.js` — Cloudflare Worker. Serves the frontend at `/` and handles `POST /api/extract`.
-- Cloudflare Browser Run binding `BROWSER` — opens and renders the public shared page using Chromium, then scrapes message elements in page order.
+The service serves the frontend and API from the same origin, so the existing frontend's `/api/extract` request works without a separate API URL.
 
-The extraction service accepts only HTTPS URLs on `chatgpt.com` or `chat.openai.com` using the `/share/` path. It does not accept arbitrary URLs.
+## Free-tier note
+Render Free web services spin down after 15 minutes without inbound traffic. The first request after sleep may take about a minute to wake the service. See https://render.com/docs/free.
 
-## Privacy
-ChatVault does not create a conversation archive or database. The Worker processes the public share URL for the extraction request and returns the extracted messages to the visitor's browser. Do not paste confidential conversations into public share links.
-
-## Current limitations
-- Public shared links only; private chats, deleted shares, and links requiring sign-in cannot be extracted.
-- The extractor currently captures text content and role labels; image and file attachments are not included.
-- The extractor relies on ChatGPT's rendered page structure. If that structure changes, the selector/extraction code may need maintenance.
-- Browser Run has account-level usage limits. Monitor usage in the Cloudflare dashboard.
-
-## Deployment
-The production Worker is named `chatvault-retrieval` and uses a Browser Run binding named `BROWSER`. The frontend is served from the same Worker origin, so no manual CORS configuration or separate GitHub Pages activation is needed for the live app.
+## Extraction behavior and limits
+- Accepts only HTTPS public share links on `chatgpt.com` or `chat.openai.com` at `/share/<id>`.
+- Extracts user/assistant messages from the embedded conversation payload in sequence order.
+- Includes text and visible attachment placeholders; does not download binary image/file attachments.
+- No login, user account, persistent storage, or conversation history database.
+- ChatGPT may change its shared-page format or block a hosting provider's server IP. A successful Render deployment does not guarantee ChatGPT will allow extraction; test with a real public share link before treating the service as operational.
