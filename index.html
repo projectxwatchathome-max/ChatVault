@@ -45,7 +45,7 @@ hr{border:0;border-top:1px solid var(--line);margin:28px 0}.results{display:none
 const $=id=>document.getElementById(id);let conversation=null,plainText='',title='ChatGPT conversation';
 function status(message,type=''){const el=$('status');el.textContent=message;el.className='status show '+type}
 function safeName(s){return(s||'chatgpt-conversation').replace(/[^a-z0-9-_]+/gi,'-').replace(/^-|-$/g,'').slice(0,70)||'chatgpt-conversation'}
-function validShareUrl(value){try{const u=new URL(value);return ['chatgpt.com','chat.openai.com'].includes(u.hostname)&&/^\/share\/[a-zA-Z0-9-]+/.test(u.pathname)}catch{return false}}
+function validShareUrl(value){try{const u=new URL(value);return ['chatgpt.com','chat.openai.com'].includes(u.hostname)&&u.pathname.startsWith('/share/')&&/^[a-zA-Z0-9-]+$/.test(u.pathname.slice(7))}catch{return false}}
 function textFromNode(node){if(node==null)return'';if(typeof node==='string')return node;if(typeof node==='number')return String(node);if(Array.isArray(node))return node.map(textFromNode).filter(Boolean).join('\n');if(typeof node==='object'){if(typeof node.text==='string')return node.text;if(node.content&&Array.isArray(node.content))return textFromNode(node.content);if(node.parts)return textFromNode(node.parts);if(node.message&&node.message.content)return textFromNode(node.message.content);if(node.content&&typeof node.content==='string')return node.content;}return''}
 function parseConversation(html,url){
  const doc=new DOMParser().parseFromString(html,'text/html');let found=[];
