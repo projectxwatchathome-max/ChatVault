@@ -1,77 +1,126 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#ffffff"><title>ChatVault — Shared Chat Downloader</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff">
+<title>ChatVault — Free ChatGPT Extractor</title>
+<meta name="description" content="Extract a public ChatGPT shared conversation into clean text. Copy it or download as TXT, Markdown, JSON, HTML, or PDF.">
 <style>
-:root{color-scheme:light;--bg:#fff;--text:#171717;--muted:#686868;--line:#e5e5e5;--soft:#f6f6f6;--accent:#777df0;--danger:#b42318;--good:#16845b}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 Inter,system-ui,-apple-system,Segoe UI,sans-serif}
-main{width:min(760px,100%);margin:0 auto;padding:54px 22px 64px}.brand{display:flex;align-items:center;gap:12px;margin-bottom:42px}.logo{width:42px;height:42px;border-radius:14px;background:#f0f1ff;color:#6973e8;display:grid;place-items:center;font-size:23px}.brand strong{font-size:19px}.brand small{display:block;color:var(--muted);font-size:12px}
-h1{font-size:clamp(27px,5vw,36px);line-height:1.15;letter-spacing:-1px;margin:0 0 10px}.intro{color:var(--muted);margin:0 0 30px}.panel{border:1px solid var(--line);border-radius:22px;padding:25px;box-shadow:0 5px 22px #00000008}.panel h2{font-size:21px;margin:0 0 22px}.fieldlabel{display:block;font-size:13px;font-weight:700;color:#555;margin-bottom:8px;letter-spacing:.2px}
-input{width:100%;border:1px solid #d8d8d8;border-radius:999px;padding:17px 20px;font:inherit;outline:none}input:focus{border-color:#888ef2;box-shadow:0 0 0 3px #888ef21c}
-button{border:0;border-radius:999px;padding:14px 18px;font:inherit;font-weight:650;cursor:pointer;background:#f2f2f2;color:#222}button:disabled{opacity:.5;cursor:not-allowed}.primary{width:100%;margin-top:16px;background:#171717;color:white}.primary:hover{background:#333}
-.status{display:none;margin-top:14px;padding:12px 14px;border-radius:12px;background:#f6f6f6;color:#555;font-size:14px;white-space:pre-wrap}.status.show{display:block}.status.error{background:#fff0ef;color:var(--danger)}.status.success{background:#eaf8f1;color:var(--good)}
-hr{border:0;border-top:1px solid var(--line);margin:28px 0}.results{display:none}.results.show{display:block}.results h3{font-size:19px;margin:0 0 14px}.meta{font-size:13px;color:var(--muted);margin-bottom:14px}.actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.action{border:1px solid var(--line);border-radius:14px;background:white;text-align:left;display:flex;align-items:center;gap:11px;padding:17px;font-size:16px}.action:hover{background:#fafafa;border-color:#cfcfcf}.action span:first-child{font-size:22px}
-.preview{margin-top:18px;border:1px solid var(--line);border-radius:14px;overflow:hidden}.preview summary{padding:13px 15px;cursor:pointer;font-weight:650}.previewbody{padding:0 15px 15px;max-height:360px;overflow:auto;white-space:pre-wrap;font-size:13px;color:#555}
-.captureHelp{margin-top:16px;padding:15px;border:1px solid var(--line);border-radius:14px;background:#fafafa;font-size:13px}.captureHelp p{color:var(--muted);margin:6px 0 12px}.captureHelp .action{width:100%;font-size:14px}.captureHelp ol{padding-left:20px;color:#666;margin:12px 0 0}.captureHelp li{margin:5px 0}.note{font-size:12px;color:#777;margin-top:22px}.foot{font-size:12px;color:#888;text-align:center;margin-top:28px}
-.settings{margin-top:24px}.settings summary{color:#777;font-size:12px;cursor:pointer}.settings input{border-radius:10px;padding:10px;font-size:13px;margin-top:9px}.settings p{font-size:12px;color:#777;margin:6px 0}
-@media(max-width:520px){main{padding:35px 16px}.panel{padding:20px}.actions{gap:9px}.action{padding:14px 12px;font-size:15px;align-items:flex-start}.brand{margin-bottom:32px}}
-</style></head>
-<body><main>
-<div class="brand"><div class="logo">↗</div><div><strong>ChatVault</strong><small>ChatGPT Shared Conversation Downloader</small></div></div>
-<h1>Save or copy your ChatGPT conversations.</h1><p class="intro">Paste a ChatGPT shared link, open it in Chrome, and capture the conversation with your saved bookmark.</p>
-<section class="panel">
-<h2>🔗 ChatVault — Shared Chat Downloader</h2>
-<label class="fieldlabel" for="shareUrl">PASTE CHATGPT SHARED LINK</label>
-<input id="shareUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://chatgpt.com/share/..." />
-<button class="primary" id="retrieve">Open shared conversation</button><div class="captureHelp"><b>One-time setup: add the capture bookmark</b><p>Copy this bookmark code once, save it in Chrome, then tap it on the shared page.</p><button class="action" id="copyBookmark" type="button"><span>🔖</span><span>Copy ChatVault capture bookmark</span></button><ol><li>Copy the bookmark code.</li><li>In Chrome, bookmark any page and edit that bookmark.</li><li>Name it <b>ChatVault Capture</b> and replace its URL with the copied code.</li><li>Open your shared link here, wait for it to load, then run the saved bookmark.</li></ol></div>
-<div class="status" id="status" role="status" aria-live="polite"></div>
-<div class="results" id="results"><hr><h3 id="chatTitle">After retrieval</h3><div class="meta" id="chatMeta"></div>
-<div class="actions">
-<button class="action" id="copy"><span>▢</span><span>Copy entire chat</span></button>
-<button class="action" id="txt"><span>⇩</span><span>Download TXT</span></button>
-<button class="action" id="pdf"><span>▤</span><span>Download PDF</span></button>
-<button class="action" id="html"><span>&lt;/&gt;</span><span>Download HTML</span></button>
+:root{color-scheme:light;--ink:#171923;--muted:#656b78;--line:#e4e7ed;--soft:#f7f8fb;--blue:#5b66dc;--blue2:#eef0ff;--green:#14784e;--red:#a52b2b}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font:16px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+a{color:inherit}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+header{height:72px;border-bottom:1px solid #f0f1f4;display:flex;align-items:center}
+.brand{display:flex;gap:11px;align-items:center;text-decoration:none;font-weight:750;font-size:18px;letter-spacing:-.3px}
+.brandmark{height:37px;width:37px;border-radius:12px;display:grid;place-items:center;background:var(--blue2);color:var(--blue);font-size:21px}
+.header-note{margin-left:auto;color:var(--muted);font-size:13px}
+.hero{text-align:center;padding:66px 0 30px}
+.pill{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;color:#555e70;font-size:12px;font-weight:700;margin-bottom:19px}
+.hero h1{font-size:clamp(34px,6vw,52px);line-height:1.08;letter-spacing:-1.8px;margin:0 auto 17px;max-width:680px}
+.hero h1 span{color:var(--blue)}
+.hero p{font-size:18px;color:var(--muted);max-width:650px;margin:0 auto}
+.tool{max-width:720px;margin:28px auto 0;border:1px solid var(--line);border-radius:20px;padding:25px;box-shadow:0 9px 34px #2028420b}
+label{display:block;font-size:13px;font-weight:750;letter-spacing:.4px;text-align:left;color:#424959;margin:0 0 9px}
+.inputrow{display:flex;gap:10px}
+input{min-width:0;flex:1;height:55px;border:1px solid #d5d9e1;border-radius:11px;padding:0 16px;font:inherit;outline:none}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #5b66dc20}
+button{font:inherit;font-weight:700;border:0;border-radius:11px;cursor:pointer}
+.primary{height:55px;padding:0 25px;background:var(--blue);color:#fff;white-space:nowrap}
+.primary:hover{background:#4c56c5}.primary:disabled{opacity:.6;cursor:wait}
+.privacy{display:flex;align-items:center;justify-content:center;gap:7px;color:var(--muted);font-size:12px;margin-top:14px}
+.status{display:none;text-align:left;padding:13px 15px;border-radius:11px;margin-top:16px;font-size:14px;white-space:pre-wrap}
+.status.show{display:block}.status.error{background:#fff0f0;color:var(--red)}.status.success{background:#ecf8f1;color:var(--green)}.status.info{background:#f2f4ff;color:#454db3}
+.output{display:none;margin-top:20px;text-align:left}.output.show{display:block}
+.outputbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px;flex-wrap:wrap}
+.output-title{font-weight:750}.count{font-size:12px;color:var(--muted);font-weight:500;margin-left:7px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+select{height:39px;padding:0 32px 0 11px;border:1px solid var(--line);border-radius:9px;background:white;font:inherit;font-size:13px}
+.secondary{height:39px;padding:0 13px;background:var(--soft);border:1px solid var(--line);font-size:13px}
+.secondary:hover{background:#eef0f5}
+.copy{background:#252936;color:#fff;border-color:#252936}
+.resulttext{width:100%;min-height:240px;max-height:620px;resize:vertical;padding:18px;border:1px solid var(--line);border-radius:12px;background:#fcfcfd;color:#252936;font:13px/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre-wrap;overflow:auto}
+.steps{padding:62px 0 15px}
+.section-title{text-align:center;margin:0 0 9px;font-size:27px;letter-spacing:-.7px}
+.section-lead{text-align:center;color:var(--muted);margin:0 auto 27px;max-width:620px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.step{border:1px solid var(--line);border-radius:15px;padding:19px}
+.num{height:31px;width:31px;display:grid;place-items:center;border-radius:9px;background:var(--blue2);color:var(--blue);font-weight:800;font-size:13px;margin-bottom:12px}
+.step h3{font-size:16px;margin:0 0 5px}.step p{font-size:13px;color:var(--muted);margin:0}
+.features{padding:47px 0}
+.features h2{text-align:center;font-size:25px;letter-spacing:-.6px;margin:0 0 22px}
+.featuregrid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+.feature{padding:18px;border:1px solid var(--line);border-radius:14px}
+.feature h3{font-size:15px;margin:0 0 5px}.feature p{font-size:13px;color:var(--muted);margin:0}
+.faq{padding:15px 0 60px}.faq h2{text-align:center;font-size:25px}
+details{border-bottom:1px solid var(--line);padding:15px 2px}
+summary{cursor:pointer;font-weight:700}
+details p{color:var(--muted);font-size:14px;margin:9px 0 1px}
+footer{border-top:1px solid #f0f1f4;padding:23px 0 32px;text-align:center;color:var(--muted);font-size:12px}
+@media(max-width:600px){.wrap{padding:0 16px}.header-note{font-size:11px}.hero{padding:48px 0 20px}.hero p{font-size:16px}.tool{padding:18px;margin-top:23px}.inputrow{display:grid;grid-template-columns:1fr}.primary{width:100%}.grid{grid-template-columns:1fr}.step{padding:16px}.featuregrid{grid-template-columns:1fr}.steps{padding-top:48px}.features{padding:35px 0}.outputbar{align-items:flex-start}.controls{width:100%}.controls select{flex:1}}
+</style>
+</head>
+<body>
+<header><div class="wrap" style="width:100%;display:flex;align-items:center"><a class="brand" href="/"><span class="brandmark">↗</span><span>ChatVault</span></a><span class="header-note">Free ChatGPT shared-chat extractor</span></div></header>
+<main class="wrap">
+<section class="hero">
+<div class="pill">✦ FREE TOOL · NO SIGN-UP REQUIRED</div>
+<h1>Free ChatGPT <span>Chat Extractor</span></h1>
+<p>Paste any public ChatGPT share link and turn the full conversation into clean, copyable text. Export it in the format you need.</p>
+<section class="tool" aria-label="ChatGPT conversation extractor">
+<label for="shareUrl">CHATGPT SHARE LINK URL</label>
+<div class="inputrow"><input id="shareUrl" type="url" inputmode="url" autocomplete="url" placeholder="https://chatgpt.com/share/..." /><button id="extract" class="primary">Extract</button></div>
+<div class="privacy">🔒 Your conversation is processed for this request and is not saved in a ChatVault archive.</div>
+<div id="status" class="status" role="status" aria-live="polite"></div>
+<div id="output" class="output">
+<div class="outputbar"><div><span class="output-title" id="resultTitle">Your conversation</span><span class="count" id="messageCount"></span></div><div class="controls"><button class="secondary copy" id="copy">Copy all</button><select id="format" aria-label="Export format"><option value="txt">Plain text (.txt)</option><option value="md">Markdown (.md)</option><option value="json">JSON (.json)</option><option value="html">HTML (.html)</option><option value="pdf">PDF (.pdf)</option></select><button class="secondary" id="download">Download</button></div></div>
+<textarea id="resultText" class="resulttext" readonly spellcheck="false" aria-label="Extracted conversation"></textarea>
 </div>
-<details class="preview"><summary>Preview retrieved conversation</summary><div class="previewbody" id="preview"></div></details>
-</div>
-<p class="note">Only public shared pages that open in your browser can be captured. Conversation text is sent directly from the page to ChatVault and is not stored.</p>
 </section>
-
-<div class="foot">ChatVault · ChatGPT links only · No account required</div>
+</section>
+<section class="steps"><h2 class="section-title">How It Works</h2><p class="section-lead">Turn a shared ChatGPT conversation into clean text in three simple steps.</p>
+<div class="grid"><article class="step"><div class="num">1</div><h3>Share Your Chat</h3><p>Open a ChatGPT conversation, use Share, and copy its public link.</p></article><article class="step"><div class="num">2</div><h3>Paste the Link</h3><p>Paste the <code>chatgpt.com/share/...</code> URL above and tap Extract.</p></article><article class="step"><div class="num">3</div><h3>Get the Full Text</h3><p>Review the conversation, copy everything, or download your preferred format.</p></article></div>
+</section>
+<section class="features"><h2>Why Use ChatVault?</h2><div class="featuregrid">
+<article class="feature"><h3>One-Click Extraction</h3><p>Paste a public share URL and extract the rendered conversation without manually copying each message.</p></article>
+<article class="feature"><h3>Copy with One Click</h3><p>Copy the complete conversation with clear You and ChatGPT labels.</p></article>
+<article class="feature"><h3>Multiple Export Formats</h3><p>Download as TXT, Markdown, JSON, HTML, or print to PDF.</p></article>
+<article class="feature"><h3>No Login Required</h3><p>No account, email, password, extension, or browser bookmark setup.</p></article>
+<article class="feature"><h3>Privacy First</h3><p>ChatVault does not keep an archive of extracted conversations. Results are returned to your browser.</p></article>
+<article class="feature"><h3>Readable Formatting</h3><p>Preserves message order and role labels, with paragraph and code-block spacing where available.</p></article>
+</div></section>
+<section class="faq"><h2>Frequently Asked Questions</h2>
+<details><summary>Which links can I extract?</summary><p>Only public ChatGPT shared links beginning with https://chatgpt.com/share/ or the legacy chat.openai.com/share/ format.</p></details>
+<details><summary>Do I need to sign in?</summary><p>No ChatVault account or ChatGPT login is requested. The shared page must be publicly accessible to the browser service.</p></details>
+<details><summary>Are images and file attachments included?</summary><p>This version extracts message text. Images, uploaded files, and other binary attachments are not included in the text exports.</p></details>
+<details><summary>Why can an extraction fail?</summary><p>A link may be private, deleted, unavailable, or blocked by the source platform. ChatGPT can also change its shared-page structure, which may require an extractor update.</p></details>
+<details><summary>Does ChatVault save my conversations?</summary><p>No conversation archive or database is used. The extraction service processes the public link for the request and returns the result to your browser.</p></details>
+</section>
 </main>
+<footer><div class="wrap">ChatVault · ChatGPT links only · No account required</div></footer>
 <script>
 (()=>{'use strict';
-const $=id=>document.getElementById(id);let conversation=null,plainText='',title='ChatGPT conversation',captureTab=null,waitingForCapture=false;
-function status(message,type=''){const el=$('status');el.textContent=message;el.className='status show '+type}
-function safeName(s){return(s||'chatgpt-conversation').replace(/[^a-z0-9-_]+/gi,'-').replace(/^-|-$/g,'').slice(0,70)||'chatgpt-conversation'}
-function validShareUrl(value){try{const u=new URL(value);return ['chatgpt.com','chat.openai.com'].includes(u.hostname)&&u.pathname.startsWith('/share/')&&/^[a-zA-Z0-9-]+$/.test(u.pathname.slice(7))}catch{return false}}
-function textFromNode(node){if(node==null)return'';if(typeof node==='string')return node;if(typeof node==='number')return String(node);if(Array.isArray(node))return node.map(textFromNode).filter(Boolean).join('\n');if(typeof node==='object'){if(typeof node.text==='string')return node.text;if(node.content&&Array.isArray(node.content))return textFromNode(node.content);if(node.parts)return textFromNode(node.parts);if(node.message&&node.message.content)return textFromNode(node.message.content);if(node.content&&typeof node.content==='string')return node.content;}return''}
-function parseConversation(html,url){
- const doc=new DOMParser().parseFromString(html,'text/html');let found=[];
- // ChatGPT shared pages have changed markup over time; collect message nodes from known data shapes.
- const scripts=[...doc.querySelectorAll('script')].map(s=>s.textContent||'').filter(t=>t.length>20);
- const candidates=[];
- for(const s of scripts){for(const marker of ['shared_conversation','conversation','mapping']){let at=s.indexOf(marker);if(at>=0)candidates.push(s)}}
- for(const s of candidates){const starts=[s.indexOf('{'),s.indexOf('[')].filter(n=>n>=0);for(const start of starts){try{let parsed=JSON.parse(s.slice(start));const walk=(o,depth=0)=>{if(!o||typeof o!=='object'||depth>12)return;if(Array.isArray(o)){o.forEach(v=>walk(v,depth+1));return}if(o.message&&o.message.author&&o.message.content){const m=o.message;const role=m.author.role;if(['user','assistant','system'].includes(role)){const content=textFromNode(m.content);if(content.trim())found.push({role,text:content,ts:m.create_time||0})}}if(o.mapping&&typeof o.mapping==='object'){for(const v of Object.values(o.mapping))walk(v,depth+1)}for(const [k,v] of Object.entries(o)){if(k!=='mapping'&&v&&typeof v==='object')walk(v,depth+1)}};walk(parsed);if(found.length)break}catch{}}if(found.length)break}
- if(!found.length){const selectors=['[data-message-author-role]','[data-testid*="conversation-turn"]','main article'];for(const sel of selectors){const nodes=[...doc.querySelectorAll(sel)];if(nodes.length){for(const n of nodes){const role=n.getAttribute('data-message-author-role')||((n.innerText||'').startsWith('You')?'user':'assistant');const t=(n.innerText||'').trim();if(t)found.push({role,text:t,ts:0})}if(found.length)break}}}
- // Deduplicate repeated render nodes and preserve DOM order.
- const seen=new Set();found=found.filter(m=>{const k=m.role+'|'+m.text;if(seen.has(k))return false;seen.add(k);return true});
- if(!found.length){const titleNode=doc.querySelector('title');const pageTitle=titleNode?.textContent?.trim();throw new Error('The shared page loaded, but ChatVault could not identify its message data. '+(pageTitle?'Page title: '+pageTitle+'. ':'')+'The ChatGPT page format may have changed.')}
- const pageTitle=doc.querySelector('meta[property="og:title"]')?.content||doc.querySelector('title')?.textContent||'ChatGPT conversation';
- const messages=found.filter(m=>m.role!=='system');
- return {title:pageTitle.replace(/\s*[-|] ChatGPT.*$/i,'').trim()||'ChatGPT conversation',url,messages,retrievedAt:new Date().toISOString()};
-}
-function makeText(c){return c.messages.map(m=>(m.role==='user'?'You':m.role==='assistant'?'ChatGPT':m.role)+':\n'+m.text).join('\n\n'+('—'.repeat(28))+'\n\n')}
-function download(name,content,type){const blob=new Blob([content],{type});const a=document.createElement('a');const u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1500)}
-function captureBookmarkCode(){return "javascript:(()=>{try{const nodes=[...document.querySelectorAll('[data-message-author-role]')];const messages=nodes.map(n=>({role:n.getAttribute('data-message-author-role'),text:(n.innerText||n.textContent||'').trim()})).filter(m=>['user','assistant','system'].includes(m.role)&&m.text);const unique=[];const seen=new Set();for(const m of messages){const k=m.role+'|'+m.text;if(!seen.has(k)){seen.add(k);unique.push(m)}}if(!unique.length){alert('ChatVault could not find messages. Ensure the shared chat has loaded.');return}const payload={type:'CHATVAULT_CAPTURE',title:document.title||'ChatGPT conversation',url:location.href,messages:unique};location.href='https://chatvault-retrieval.adminenzoreviewer.workers.dev/#capture='+encodeURIComponent(JSON.stringify(payload))}catch(e){alert('Capture failed: '+e.message)}})()"}
-$('copyBookmark').addEventListener('click',async()=>{const code=captureBookmarkCode();try{await navigator.clipboard.writeText(code)}catch{const t=document.createElement('textarea');t.value=code;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}status('Capture bookmark code copied. Follow the setup steps above.','success')});
-$('retrieve').addEventListener('click',()=>{const url=$('shareUrl').value.trim();$('results').classList.remove('show');conversation=null;if(!validShareUrl(url)){status('Please enter a valid public ChatGPT shared link beginning with https://chatgpt.com/share/','error');return}waitingForCapture=true;captureTab=window.open(url,'_blank');if(!captureTab){waitingForCapture=false;status('Chrome blocked the new tab. Allow pop-ups for ChatVault and try again.','error');return}status('Shared page opened. Wait until the conversation loads, then run your saved ChatVault Capture bookmark from Chrome’s bookmarks menu. Return to this tab after the confirmation.')});
-function applyCapture(d){if(!d||d.type!=='CHATVAULT_CAPTURE'||!Array.isArray(d.messages))return;conversation={title:String(d.title||'ChatGPT conversation'),url:String(d.url||''),messages:d.messages.filter(m=>m&&['user','assistant'].includes(m.role)&&typeof m.text==='string'&&m.text.trim()),retrievedAt:new Date().toISOString()};if(!conversation.messages.length){status('No user or assistant messages were captured.','error');return}plainText=makeText(conversation);title=conversation.title;$('chatTitle').textContent=title;$('chatMeta').textContent=conversation.messages.length+' messages · Captured from shared page';$('preview').textContent=plainText.slice(0,12000)+(plainText.length>12000?'\\n\\n[Preview shortened; exports include all captured text.]':'');$('results').classList.add('show');status('Conversation captured. You can now copy or export it.','success');history.replaceState(null,'',location.pathname+location.search)}
-if(location.hash.startsWith('#capture=')){try{applyCapture(JSON.parse(decodeURIComponent(location.hash.slice(9))))}catch(e){status('The captured conversation data could not be read. Try capturing again.','error')}}
-$('copy').addEventListener('click',async()=>{if(!plainText)return;try{await navigator.clipboard.writeText(plainText);status('Entire conversation copied to clipboard.','success')}catch{const t=document.createElement('textarea');t.value=plainText;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove();status('Copy requested. If clipboard permission was denied, use Download TXT instead.','success')}});
-$('txt').addEventListener('click',()=>{if(plainText)download(safeName(title)+'.txt',plainText,'text/plain;charset=utf-8')});
-$('html').addEventListener('click',()=>{if(!conversation)return;const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));const body=conversation.messages.map(m=>'<article><h2>'+esc(m.role==='user'?'You':'ChatGPT')+'</h2><pre>'+esc(m.text)+'</pre></article>').join('\n');const doc='<!doctype html><html><head><meta charset="utf-8"><title>'+esc(title)+'</title><style>body{font:16px/1.6 system-ui;max-width:850px;margin:40px auto;padding:0 20px;color:#222}article{margin:0 0 30px}h2{font-size:14px;color:#666}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}</style></head><body><h1>'+esc(title)+'</h1>'+body+'</body></html>';download(safeName(title)+'.html',doc,'text/html;charset=utf-8')});
-$('pdf').addEventListener('click',()=>{if(!conversation)return;const w=window.open('','_blank');if(!w){status('Allow pop-ups for ChatVault to create a PDF print view.','error');return}const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));w.document.write('<!doctype html><html><head><title>'+esc(title)+'</title><style>body{font:12pt/1.55 Arial,sans-serif;max-width:800px;margin:30px auto;padding:0 24px;color:#222}article{margin:0 0 24px;break-inside:avoid}h2{font-size:10pt;color:#666}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}@media print{body{margin:0}}</style></head><body><h1>'+esc(title)+'</h1>'+conversation.messages.map(m=>'<article><h2>'+esc(m.role==='user'?'You':'ChatGPT')+'</h2><pre>'+esc(m.text)+'</pre></article>').join('')+'</body></html>');w.document.close();w.focus();setTimeout(()=>w.print(),500)});
+const $=id=>document.getElementById(id);
+let extracted=null;
+function showStatus(message,kind='info'){const el=$('status');el.textContent=message;el.className='status show '+kind}
+function validUrl(value){try{const u=new URL(value);return ['chatgpt.com','chat.openai.com'].includes(u.hostname)&&u.protocol==='https:'&&u.pathname.startsWith('/share/')&&/^[A-Za-z0-9-]+$/.test(u.pathname.slice(7))}catch{return false}}
+function plain(c){return c.messages.map(m=>(m.role==='user'?'You':'ChatGPT')+':\n'+m.text).join('\n\n'+('—'.repeat(28))+'\n\n')}
+function markdown(c){return '# '+c.title+'\n\n'+c.messages.map(m=>'## '+(m.role==='user'?'You':'ChatGPT')+'\n\n'+m.text).join('\n\n---\n\n')}
+function esc(s){return String(s).replace(/[&<>"]/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]))}
+function htmlDoc(c){return '<!doctype html><html><head><meta charset="utf-8"><title>'+esc(c.title)+'</title><style>body{font:16px/1.65 system-ui;max-width:850px;margin:36px auto;padding:0 22px;color:#222}article{margin:0 0 28px;break-inside:avoid}h2{font-size:13px;color:#666}pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit}</style></head><body><h1>'+esc(c.title)+'</h1>'+c.messages.map(m=>'<article><h2>'+esc(m.role==='user'?'You':'ChatGPT')+'</h2><pre>'+esc(m.text)+'</pre></article>').join('')+'</body></html>'}
+function currentText(){if(!extracted)return'';const v=$('format').value;if(v==='md')return markdown(extracted);if(v==='json')return JSON.stringify(extracted,null,2);if(v==='html')return htmlDoc(extracted);return plain(extracted)}
+function updateView(){if(!extracted)return;$('resultText').value=currentText();$('messageCount').textContent=extracted.messages.length+' messages'}
+$('format').addEventListener('change',updateView);
+$('extract').addEventListener('click',async()=>{const url=$('shareUrl').value.trim();$('output').classList.remove('show');extracted=null;if(!validUrl(url)){showStatus('Enter a valid public ChatGPT share link, such as https://chatgpt.com/share/...','error');return}
+const btn=$('extract');btn.disabled=true;btn.textContent='Extracting…';showStatus('Opening the shared conversation in a browser and extracting its messages. This can take up to a minute.','info');
+try{const response=await fetch('/api/extract',{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({url})});const data=await response.json().catch(()=>({error:'The extraction service returned an unreadable response.'}));if(!response.ok)throw new Error(data.error||'Extraction failed (HTTP '+response.status+').');if(!data.messages||!data.messages.length)throw new Error('No conversation messages were found on this shared page.');extracted={title:data.title||'ChatGPT conversation',url,messages:data.messages,retrievedAt:new Date().toISOString()};$('resultTitle').textContent=extracted.title;updateView();$('output').classList.add('show');showStatus('Extraction complete. Your full conversation is ready to copy or download.','success')}
+catch(e){showStatus(e.message||'Could not extract this conversation.','error')}
+finally{btn.disabled=false;btn.textContent='Extract'}});
+$('copy').addEventListener('click',async()=>{if(!extracted)return;const content=plain(extracted);try{await navigator.clipboard.writeText(content);showStatus('Complete conversation copied to clipboard.','success')}catch{const box=$('resultText');box.value=content;box.focus();box.select();showStatus('Select the text and choose Copy. Clipboard access was blocked by the browser.','info')}});
+$('download').addEventListener('click',()=>{if(!extracted)return;const fmt=$('format').value;if(fmt==='pdf'){const win=window.open('','_blank');if(!win){showStatus('Allow pop-ups to open the PDF print view.','error');return}win.document.open();win.document.write(htmlDoc(extracted));win.document.close();win.focus();setTimeout(()=>win.print(),400);return}
+const content=currentText(),mime=fmt==='html'?'text/html':fmt==='json'?'application/json':fmt==='md'?'text/markdown':'text/plain';const name=(extracted.title||'chatgpt-conversation').replace(/[^a-z0-9-_]+/gi,'-').replace(/^-|-$/g,'').slice(0,65)||'chatgpt-conversation';const blob=new Blob([content],{type:mime+';charset=utf-8'}),a=document.createElement('a'),objectUrl=URL.createObjectURL(blob);a.href=objectUrl;a.download=name+'.'+fmt;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(objectUrl),1200)});
+$('shareUrl').addEventListener('keydown',e=>{if(e.key==='Enter')$('extract').click()});
 })();
-</script></body></html>
+</script>
+</body></html>
